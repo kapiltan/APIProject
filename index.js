@@ -40,15 +40,60 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 //Write your code here//
 
+app.use(express.static("public"));
+
 //CHALLENGE 1: GET All posts
+app.get("/posts", (req, res) => {
+  res.json(posts);
+});
 
 //CHALLENGE 2: GET a specific post by id
 
+app.get("/posts/:id", (req, res) => {
+  const id = parseInt(req.params.id);
+  const data = posts.find((post) => post.id === id);
+  res.render(data);
+});
+
 //CHALLENGE 3: POST a new post
+
+app.post("/posts", (req, res) => {
+  const today = new Date().getDate();
+  const newPost = {
+    id: lastId + 1,
+    title: req.body.title,
+    content: req.body.content,
+    author: req.body.author,
+    date: today,
+  };
+  lastId = newPost.id;
+  posts.push(newPost);
+  res.sendStatus(201).json(Post);
+});
 
 //CHALLENGE 4: PATCH a post when you just want to update one parameter
 
+app.patch("/posts/:id", (req, res) => {
+  const id = req.params.id;
+  const idx = posts.findIndex((post) => post.id === id);
+
+  post[idx].title = req.body.title || post[idx].title;
+  post[idx].content = req.body.content || post[idx].content;
+  post[idx].author = req.body.author || post[idx].author;
+  post[idx].date = new Date();
+
+  res.sendStatus(201).json(post);
+});
+
 //CHALLENGE 5: DELETE a specific post by providing the post id.
+
+app.delete("/posts/:id", (req, res) => {
+  const id = req.params.id;
+  const idx = posts.findIndex((post) => post.id === id);
+
+  posts.splice(idx, 1);
+  res.sendStatus(201);
+});
 
 app.listen(port, () => {
   console.log(`API is running at http://localhost:${port}`);
